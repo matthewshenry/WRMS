@@ -4,8 +4,26 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="trip">
                 <div class="page">
-                    <h2>Trip Report</h2>
-                    <p>Trip Name: <t t-esc="trip.name"/></p>
+                    <h2><t t-esc="trip.display_name"/> Trip Report</h2>
+                    <h3> </h3>
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th>Party Number</th>
+                                <th>Head of Party</th>
+                                <th># of Passengers</th>
+                                <th>Booking Stage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="trip.booking_ids" t-as="booking">
+                                <td><t t-esc="booking.party_id.party_no"/></td>
+                                <td><t t-esc="booking.party_id.head_of_party"/></td>
+                                <td><t t-esc="booking.party_id.num_passengers"/></td>
+                                <td><t t-esc="booking.stage"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </t>
         </t>

@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 class Booking(models.Model):
     _name = 'wrms.booking'
     _description = 'Booking'
-
+    _inherit = ['mail.thread']
 
     stage = fields.Selection([('pending', 'Pending'), ('checked-in', 'Checked-In'), ('complete', 'Complete'), ('canceled', 'Canceled')], string='Stage', default='pending', required=True, help="Status of the booking: bookings are 'checked-in' when the party has been assigned a raft for the trip, 'complete' when the trip is completed, and 'canceled' if the booking becomes canceled.")
     trip_id = fields.Many2one(
@@ -19,6 +19,8 @@ class Booking(models.Model):
     visitor_ids = fields.Many2many(
         comodel_name='wrms.visitor', compute='_compute_booking_visitors', string='Guests'
     )
+    cancellation_reason = fields.Text(string='Cancellation Reason')
+
     am_pm = fields.Selection(related='trip_id.am_pm', string="AM/PM")
     section = fields.Selection(related='trip_id.section', string='Section')
     trip_date = fields.Date(related='trip_id.trip_date', string='Trip Date')
@@ -71,11 +73,41 @@ class Booking(models.Model):
     def action_set_pending(self):
         self.stage = 'pending'
 
-    def action_open_trip_search(self):
+    # def action_open_trip_search(self):
+    #     return {
+    #         'name': 'Select Trip',
+    #         'type': 'ir.actions.act_window',
+    #         'res_model': 'wrms.trip',
+    #         'view_mode': 'form',
+    #         # 'view_id': self.env.ref({external library})
+    #         'target': 'new'
+    #     }
+
+    def action_open_booking_trip_wizard(self):
         return {
-            'name': 'Select Trip',
             'type': 'ir.actions.act_window',
-            'res_model': 'wrms.trip',
-            'view_mode': 'tree,form',
-            'target': 'new'
+            'name': 'Select Trip',
+            'res_model': 'booking.trip.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+        }
+
+    def action_open_cancel_wizard(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Cancel Booking',
+            'res_model': 'cancel.booking.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_booking_id': self.id},
+        }
+
+    def action_open_reset_wizard(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Reset Booking',
+            'res_model': 'reset.booking.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_booking_id': self.id},
         }

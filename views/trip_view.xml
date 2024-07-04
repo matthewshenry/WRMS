@@ -46,7 +46,7 @@
             <field name="name">WRMS Trip List</field>
             <field name="model">wrms.trip</field>
             <field name="arch" type="xml">
-                <tree>
+                <tree default_order="trip_date asc">
                     <field name="trip_date"/>
                     <field name="section"/>
                     <field name="am_pm"/>

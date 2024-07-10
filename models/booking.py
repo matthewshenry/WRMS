@@ -31,22 +31,23 @@ class Booking(models.Model):
     show_cancel_button = fields.Boolean(compute='_compute_show_cancel_button')
     show_reset_button = fields.Boolean(compute='_compute_show_reset_button')
 
-    def write(self, vals):
-        result = super(Booking, self).write(vals)
-        # Check if the stage needs to be updated to 'checked-in'
-        for record in self:
-            if record.stage == 'pending' and record.party_id.raft_id:
-                record.stage = 'checked-in'
-        return result
+    # def write(self, vals):
+    #     result = super(Booking, self).write(vals)
+    #     # Check if the stage needs to be updated to 'checked-in'
+    #     for record in self:
+    #         if record.stage == 'pending' and record.party_id.raft_id:
+    #             record.stage = 'checked-in'
+    #     return result
 
     @api.model
     def update_booking_status(self):
-        logger.info("\nMethod update_booking_status called")
-        logger.info("\nSelf: %s", self)
-
-        for booking in self:
-            if booking.trip_date < date.today() and self.stage == 'checked-in':
-                booking.stage = 'complete'
+        today = date.today()
+        bookings_to_complete = self.search([
+            ('stage', '=', 'checked-in'),
+            ('trip_date', '<', today)
+        ])
+        for booking in bookings_to_complete:
+            booking.write({'stage': 'complete'})
 
     @api.onchange('trip_id', 'party_id')
     def _onchange_trip_party(self):
@@ -72,16 +73,6 @@ class Booking(models.Model):
 
     def action_set_pending(self):
         self.stage = 'pending'
-
-    # def action_open_trip_search(self):
-    #     return {
-    #         'name': 'Select Trip',
-    #         'type': 'ir.actions.act_window',
-    #         'res_model': 'wrms.trip',
-    #         'view_mode': 'form',
-    #         # 'view_id': self.env.ref({external library})
-    #         'target': 'new'
-    #     }
 
     def action_open_booking_trip_wizard(self):
         return {

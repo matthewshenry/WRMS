@@ -9,15 +9,16 @@ class Booking(models.Model):
     _description = 'Booking'
     _inherit = ['mail.thread']
 
-    stage = fields.Selection([('pending', 'Pending'), ('checked-in', 'Checked-In'), ('complete', 'Complete'), ('canceled', 'Canceled')], string='Stage', default='pending', required=True, help="Status of the booking: bookings are 'checked-in' when the party has been assigned a raft for the trip, 'complete' when the trip is completed, and 'canceled' if the booking becomes canceled.")
+    name = fields.Char(string='Booking Reference')
+    stage = fields.Selection([('pending', 'Pending'), ('checked-in', 'Checked-In'), ('complete', 'Complete'), ('canceled', 'Canceled')], string='Stage', default='pending', help="Status of the booking: bookings are 'checked-in' when the party has been assigned a raft for the trip, 'complete' when the trip is completed, and 'canceled' if the booking becomes canceled.")
     trip_id = fields.Many2one(
         comodel_name='wrms.trip', string='Trip'
     )
     party_id = fields.Many2one(
         comodel_name='wrms.party', string='Party'
     )
-    visitor_ids = fields.Many2many(
-        comodel_name='wrms.visitor', compute='_compute_booking_visitors', string='Guests'
+    visitor_ids = fields.One2many(
+        comodel_name='res.parnter', compute='_compute_booking_visitors', string='Guests'
     )
     cancellation_reason = fields.Text(string='Cancellation Reason')
 
@@ -52,7 +53,7 @@ class Booking(models.Model):
     @api.onchange('trip_id', 'party_id')
     def _onchange_trip_party(self):
         if self.trip_id and self.party_id:
-            self.visitor_ids = self.party_id.visitor_ids
+            self.visitor_ids = self.party_id.visitor_ids.ids
 
     @api.depends('party_id')
     def _compute_booking_visitors(self):

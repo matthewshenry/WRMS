@@ -21,7 +21,8 @@
         'views/wizard_views/reset_booking_wizard_view.xml',
         'views/wizard_views/booking_trip_wizard_view.xml',
         'report/report_trip_template.xml',
-        'report/action_report_trip.xml'
+        'report/action_report_trip.xml',
+        'report/report_header.xml'
 
     ],
     'installable': True,

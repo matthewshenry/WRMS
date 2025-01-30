@@ -11,7 +11,7 @@ class Party(models.Model):
  head_of_party = fields.Char(string="Head of Party", compute='_compute_head_of_party')
  has_kids = fields.Boolean(compute='_compute_kids', string='Has Kids?')
  visitor_ids = fields.One2many(
-  comodel_name='wrms.visitor', inverse_name='party_id', string='Guests'
+  comodel_name='res.partner', inverse_name='party_id', string='Guests', domain='[("is_company", "!=", True)]'
  )
  raft_id = fields.Many2one(
   comodel_name='wrms.raft', string='Raft'

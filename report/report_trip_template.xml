@@ -1,6 +1,7 @@
 <odoo>
     <template id="report_trip_template">
         <t t-call="web.basic_layout">
+            <t t-call="WRMS.report_header"/>
             <t t-foreach="docs" t-as="trip">
                 <div class="page">
                     <h2><t t-esc="trip.display_name"/> Visitor Cards</h2>
@@ -33,6 +34,7 @@
 
                 </div>
             </t>
+            <t t-call="WRMS.report_footer"/>
         </t>
     </template>
 <!--    A previous version of the PDF report that simply printed parties in a small table.-->

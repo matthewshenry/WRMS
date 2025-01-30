@@ -14,7 +14,7 @@ class Raft(models.Model):
         comodel_name='wrms.party', inverse_name='raft_id', string='Parties'
     )
     visitor_ids = fields.One2many(
-        comodel_name='wrms.visitor', inverse_name='raft_id', string='Visitors'
+        comodel_name='res.partner', inverse_name='raft_id', string='Visitors'
     )
     trip_id = fields.Many2one(
         comodel_name='wrms.trip', string='Trip'

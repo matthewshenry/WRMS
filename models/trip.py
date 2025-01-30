@@ -10,7 +10,7 @@ class Trip(models.Model):
     am_pm = fields.Selection([('am', 'AM'), ('PM', 'PM')], required=True, string="AM/PM")
     section = fields.Selection([('numbers', 'Numbers'), ('Browns Canyon', 'Browns Canyon'), ('Pines Creek', 'Pines Creek')], string='Section', required=True)
     trip_date = fields.Date(string='Trip Date', required=True)
-    num_passengers = fields.Integer(compute='_compute_num_guests', string='# of Passengers', required=True)
+    num_passengers = fields.Integer(compute='_compute_num_guests', string='# of Passengers')
     booking_ids = fields.One2many(
         comodel_name ='wrms.booking', inverse_name='trip_id', string='Bookings'
     )
@@ -21,7 +21,7 @@ class Trip(models.Model):
         comodel_name='wrms.raft', inverse_name='trip_id', string='Rafts'
     )
     visitor_ids = fields.One2many(
-        comodel_name='wrms.visitor', compute='_compute_trip_visitors', string='Visitors'
+        comodel_name='res.partner', compute='_compute_trip_visitors', string='Visitors'
     )
     is_created = fields.Boolean(default=False, string="Is Created")
 
@@ -42,7 +42,7 @@ class Trip(models.Model):
         for trip in self:
             logger.info("\n _compute_trip_party is being called for %s" % trip.display_name)
             if trip.booking_ids:
-                trip.party_ids = trip.booking_ids.party_id.ids
+                trip.party_ids = trip.booking_ids.party_id
             else:
                 trip.party_ids = []
 
@@ -50,6 +50,6 @@ class Trip(models.Model):
     def _compute_trip_visitors(self):
         for trip in self:
             if trip.booking_ids:
-                trip.visitor_ids = trip.booking_ids.visitor_ids.ids
+                trip.visitor_ids = trip.booking_ids.visitor_ids
             else:
                 trip.visitor_ids = []
